@@ -31,15 +31,17 @@
 
 (defcomponent navbar
   [{:keys [bs-style brand brand-link component-element
-           fluid? position]
+           fluid? position fixed static]
     :or {bs-style :default
          component-element :nav
          brand-link "#"
          brand "Brand"}}
    content]
-  [component-element {:class {:navbar true
-                              [:navbar bs-style] bs-style
-                              [:navbar position] position}}
+  [component-element
+   {:class {:navbar true
+            [:navbar bs-style] bs-style
+            [:navbar :fixed fixed] fixed
+            [:navbar :static static] static}}
    (container
      {:fluid? fluid?}
      [:div.navbar-header
