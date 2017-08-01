@@ -93,3 +93,36 @@
       [:div.tab-pane {:role :tabpanel
                       :class (when active? "active")
                       :id id} content])]])
+
+(defcomponent pagination
+  [{:keys [items active-page href max-buttons
+           first? last? next? previous? parameter-name
+           url extra parameter-name]
+    :or {items 1
+         url ""
+         href identity
+         max-buttons 5
+         first? false
+         last? false
+         next? true
+         previous? true}} _]
+  (let [page-link
+        (fn [i caption]
+          [:li {:class
+                {:active (and (integer? caption) (= i active-page))
+                 :disabled (and (string? caption)
+                                (or (not (pos? i))
+                                    (= i active-page)
+                                    (> i items)))}}
+           [:a {:href (href i), :title i} caption]])]
+    [:nav [:ul.pagination
+           (when first? (page-link 1 "&laquo;"))
+           (when previous? (page-link (dec active-page) "‹"))
+           (for [i (if max-buttons
+                     (let [start (- active-page (int (/ max-buttons 2)))]
+                       (range start (+ start max-buttons)))
+                     (range 1 (inc items)))
+                 :when (<= 1 i items)]
+             (page-link i i))
+           (when next? (page-link (inc active-page) "›"))
+           (when last? (page-link items "&raquo;"))]]))
