@@ -1,32 +1,21 @@
 (ns hiccup-bootstrap.components
   (:require [clojure.string :as string]
+            [hiccup.def :refer [defelem]]
             [hiccup-bootstrap.def :refer [defcomponent]]))
+
+(defn- join-classes
+  ([prefix classes]
+   (cond->> classes
+     true (map name)
+     prefix (map (partial str (name prefix) "-"))
+     true (string/join " ")))
+  ([classes]
+   (join-classes nil classes)))
 
 (defcomponent container
   [{:keys [fluid?]}
    content]
   [:div {:class {[:container (when fluid? :fluid)] true}}
-   content])
-
-(defcomponent nav-item
-  [{:keys [active? disabled? href]
-    :or {href "#"}}
-   content]
-  [:li {:role :presentation
-        :class {:active active?
-                :disabled disabled?}}
-   [:a {:href href}
-    content
-    (when active? [:span.sr-only "(current)"])]])
-
-(defcomponent nav
-  [{:keys [bs-style stacked? justified? navbar?]}
-   content]
-  [:ul {:class {:nav true
-                [:nav bs-style] bs-style
-                [:nav :stacked] stacked?
-                [:nav :justified] justified?
-                [:navbar :nav] navbar?}}
    content])
 
 (defcomponent navbar
@@ -57,9 +46,6 @@
      [:div.navbar-collapse.collapse
       {:id "navbar-collapse1"}
       content])])
-
-(defn- join-classes [classes]
-  (string/join " " classes))
 
 (defn panel [{:keys [footer header bs-style collapsible? expanded?
                      title attrs]
@@ -94,35 +80,37 @@
                       :class (when active? "active")
                       :id id} content])]])
 
-(defcomponent pagination
-  [{:keys [items active-page href max-buttons
-           first? last? next? previous? parameter-name
-           url extra parameter-name]
-    :or {items 1
-         url ""
-         href identity
-         max-buttons 5
-         first? false
-         last? false
-         next? true
-         previous? true}} _]
-  (let [page-link
-        (fn [i caption]
-          [:li {:class
-                {:active (and (integer? caption) (= i active-page))
-                 :disabled (and (string? caption)
-                                (or (not (pos? i))
-                                    (= i active-page)
-                                    (> i items)))}}
-           [:a {:href (href i), :title i} caption]])]
-    [:nav [:ul.pagination
-           (when first? (page-link 1 "&laquo;"))
-           (when previous? (page-link (dec active-page) "‹"))
-           (for [i (if max-buttons
-                     (let [start (- active-page (int (/ max-buttons 2)))]
-                       (range start (+ start max-buttons)))
-                     (range 1 (inc items)))
-                 :when (<= 1 i items)]
-             (page-link i i))
-           (when next? (page-link (inc active-page) "›"))
-           (when last? (page-link items "&raquo;"))]]))
+(defelem button
+  ([content] (button [:default] content))
+  ([styles content] [:button.btn {:type :button
+                                  :class (join-classes :btn styles)}
+                     content]))
+
+(defelem form-group [& body]
+  [:div {:class :form-group} body])
+
+(defelem button-group [& body]
+  [:div.btn-group {:role :group} body])
+
+(defelem tab-content [& body]
+  [:div.tab-content body])
+
+(defelem tab-pane [& body]
+  [:div {:role :tabpanel, :class "tab-pane"} body])
+
+(defelem pager [& body]
+  [:ul.pager body])
+
+(defelem nav
+  [styles & body]
+  [:ul.nav {:class (join-classes :nav styles)}
+   body])
+
+(defelem nav-item [& body]
+  [:li {:role :presentation} body])
+
+(defelem page-header [& body]
+  [:div.page-header body])
+
+(defelem row [& body]
+  [:div.row])
