@@ -1,7 +1,7 @@
 (ns hiccup-bootstrap.components
   (:require [clojure.string :as string]
             [hiccup.def :refer [defelem]]
-            [hiccup-bootstrap.def :refer [defcomponent]]))
+            [hiccup-bootstrap.def :refer [defcomponent classes]]))
 
 (defn- join-classes
   ([prefix classes]
@@ -113,4 +113,12 @@
   [:div.page-header body])
 
 (defelem row [& body]
-  [:div.row])
+  [:div.row body])
+
+(defelem alert [& body]
+  (into [:div.alert {:role :alert}] body))
+
+(defelem glyphicon [glyph]
+  [:span {:class (classes {:glyphicon true
+                           [:glyphicon glyph] glyph})
+          :aria-hidden true}])
