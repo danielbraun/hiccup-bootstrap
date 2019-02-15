@@ -1,7 +1,7 @@
 (ns hiccup-bootstrap.3.layouts)
 
 (defn basic [{:keys [language-code title content extra-head extra-script
-                     jquery-url base-url]
+                     jquery-url base-url rtl?]
               :or {content "Bootstrap body content"
                    base-url "//maxcdn.bootstrapcdn.com/bootstrap/3.3.7"
                    jquery-url "//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"
@@ -18,6 +18,9 @@
       [:title title]
       [:link {:href (str base-url "/css/bootstrap.min.css")
               :rel :stylesheet}]
+      (when rtl?
+        [:link {:href "//cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css"
+                :rel :stylesheet}])
       "<!--[if lt IE 9]>"
       [:script {:src "https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"}]
       [:script {:src "https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"}]
