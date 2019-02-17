@@ -88,9 +88,28 @@
        (list-group-item item)
        (list-group-item {} item)))])
 
-(defn label [{:keys [bs-style content]
-              :or {bs-style :default}}
-             & ccontent]
-  [:span {:class (classes {:label true
-                           [:label bs-style] true})}
-   (or content ccontent)])
+(defn label
+  ([content] (label {} content))
+  ([{:keys [bs-style content]
+     :or {bs-style :default}}
+    ccontent]
+   (list [:span {:class (classes {:label true
+                                  [:label bs-style] true})}
+          (or content ccontent)] " ")))
+
+(defn media-object [{:keys [heading body media href side]
+                     :or {heading "heading"
+                          side :left
+                          href "#"
+                          body "body"
+                          media [:img {:alt "media"
+                                       :height 64
+                                       :width 64}]}} & bbody]
+  [:div.media
+   [:div {:class (classes {[:media side] true})}
+    [:a {:href href}
+     (some-> media
+             (update-in [1 :class] str " media-object"))]]
+   [:div.media-body
+    (when heading [:h4.media-heading heading])
+    (or body bbody)]])
